@@ -120,3 +120,56 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Container que aplica a perspectiva 3D */
+.flip-card-container {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 28rem; /* 448px, o mesmo que max-w-md do Tailwind */
+  height: auto;
+}
+
+/* O elemento que de fato faz a transição de flip */
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* Aplica a rotação quando a classe .is-flipped é adicionada */
+.flip-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* Estilos para a frente e o verso do card */
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  top: 0;
+  left: 0;
+}
+
+/* O verso começa já rotacionado */
+.flip-card-back {
+  transform: rotateY(180deg);
+}
