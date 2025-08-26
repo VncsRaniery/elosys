@@ -19,7 +19,9 @@ export function Provider({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <ThemeSettingsProvider>{children}</ThemeSettingsProvider>
+      {/* <ThemeSettingsProvider> */}
+        {children}
+        {/* </ThemeSettingsProvider> */}
       {/* <SessionProvider> */}
       <Toaster />
       {/* </SessionProvider> */}

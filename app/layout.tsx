@@ -33,35 +33,71 @@
 //   );
 // }
 
-import type React from "react";
-import "@/app/globals.css";
+// import type React from "react";
+// import "@/styles/globals.css";
+// import type { Metadata } from "next";
+// import { Inter, Merriweather, JetBrains_Mono } from "next/font/google";
+// import { Provider } from "@/providers";
+
+// // Load fonts
+// const inter = Inter({
+//   subsets: ["latin"],
+//   variable: "--font-sans",
+//   display: "swap",
+// });
+
+// const merriweather = Merriweather({
+//   subsets: ["latin"],
+//   weight: ["300", "400", "700", "900"],
+//   variable: "--font-serif",
+//   display: "swap",
+// });
+
+// const jetbrainsMono = JetBrains_Mono({
+//   subsets: ["latin"],
+//   variable: "--font-mono",
+//   display: "swap",
+// });
+
+// export const metadata: Metadata = {
+//   title: "LinkTree",
+//   description: "Plataforma de estilização de links",
+// };
+
+// export default function RootLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+//   return (
+//     <html lang="en" suppressHydrationWarning className="font-sans">
+//       <body
+//         className={`${inter.variable} ${merriweather.variable} ${jetbrainsMono.variable}`}
+//       >
+//         <Provider>{children}</Provider>
+//       </body>
+//     </html>
+//   );
+// }
+
 import type { Metadata } from "next";
-import { Inter, Merriweather, JetBrains_Mono } from "next/font/google";
 import { Provider } from "@/providers";
+import { Geist, Geist_Mono } from "next/font/google";
+import "@/styles/globals.css";
 
-// Load fonts
-const inter = Inter({
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
 });
 
-const merriweather = Merriweather({
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "700", "900"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "LinkTree",
-  description: "Plataforma de estilização de links",
+  title: "LinkTree App",
+  description: "Plataforma de estilização e criação de links",
 };
 
 export default function RootLayout({
@@ -70,9 +106,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="font-sans">
+    <html lang="en">
       <body
-        className={`${inter.variable} ${merriweather.variable} ${jetbrainsMono.variable}`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Provider>{children}</Provider>
       </body>
