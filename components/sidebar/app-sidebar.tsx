@@ -23,6 +23,11 @@ const data = {
       url: "/dashboard",
       icon: House,
     },
+    {
+      title: "Meus Links",
+      url: "/dashboard/linktree",
+      icon: Link2,
+    },
   ],
   navSecondary: [
     {

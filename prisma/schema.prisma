@@ -38,14 +38,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
-    emailVerified DateTime? @map("email_verified")
+    email         String?    @unique
+    emailVerified DateTime?  @map("email_verified")
     image         String?
     password      String?
     accounts      Account[]
     sessions      Session[]
+    linktrees     Linktree[]
 
     @@map("users")
 }
@@ -57,4 +58,39 @@ model VerificationToken {
 
     @@unique([identifier, token])
     @@map("verificationtokens")
+}
+
+model Linktree {
+    id                 String   @id @default(cuid())
+    username           String   @unique
+    displayName        String?
+    avatarUrl          String?
+    bio                String?
+    theme              String   @default("dark")
+    customColor        String   @default("#8A2BE2")
+    backgroundImageUrl String?
+    isPublic           Boolean  @default(true)
+    userId             String   @map("user_id")
+    createdAt          DateTime @default(now()) @map("created_at")
+    updatedAt          DateTime @updatedAt @map("updated_at")
+
+    user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    links Link[]
+
+    @@map("linktrees")
+}
+
+model Link {
+    id         String   @id @default(cuid())
+    title      String
+    url        String
+    order      Int      @default(0)
+    isActive   Boolean  @default(true)
+    linktreeId String   @map("linktree_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    linktree Linktree @relation(fields: [linktreeId], references: [id], onDelete: Cascade)
+
+    @@map("links")
 }

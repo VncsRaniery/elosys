@@ -1,0 +1,320 @@
+"use client";
+
+import { useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreateLinktreePayload } from "@/types";
+
+interface CreateLinktreeModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (data: CreateLinktreePayload) => void;
+}
+
+interface LinkFormData {
+  id: number;
+  title: string;
+  url: string;
+}
+
+export function CreateLinktreeModal({
+  open,
+  onOpenChange,
+  onSubmit,
+}: CreateLinktreeModalProps) {
+  const [formData, setFormData] = useState({
+    username: "",
+    displayName: "",
+    avatarUrl: "",
+    bio: "",
+    theme: "dark",
+    customColor: "#8A2BE2",
+    backgroundImageUrl: "",
+    isPublic: true,
+  });
+
+  const [links, setLinks] = useState<LinkFormData[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleLinkChange = (id: number, field: string, value: string) => {
+    setLinks((prev) =>
+      prev.map((link) => (link.id === id ? { ...link, [field]: value } : link))
+    );
+  };
+
+  const addLink = () => {
+    const newLink: LinkFormData = {
+      id: Date.now(),
+      title: "",
+      url: "https://",
+    };
+    setLinks((prev) => [...prev, newLink]);
+  };
+
+  const removeLink = (id: number) => {
+    setLinks((prev) => prev.filter((link) => link.id !== id));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.username.trim()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload: CreateLinktreePayload = {
+        ...formData,
+        links: links.map((link) => ({
+          title: link.title,
+          url: link.url,
+        })),
+      };
+
+      await onSubmit(payload);
+
+      // Reset form
+      setFormData({
+        username: "",
+        displayName: "",
+        avatarUrl: "",
+        bio: "",
+        theme: "dark",
+        customColor: "#8A2BE2",
+        backgroundImageUrl: "",
+        isPublic: true,
+      });
+      setLinks([]);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isUsernameValid = (username: string) => {
+    return /^[a-zA-Z0-9_-]{3,30}$/.test(username);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Criar Novo Linktree</DialogTitle>
+          <DialogDescription>
+            Preencha as informações para criar seu novo Linktree
+          </DialogDescription>
+        </DialogHeader>
+
+        <Tabs defaultValue="basic" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="basic">Básico</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="appearance">Aparência</TabsTrigger>
+          </TabsList>
+
+          {/* Aba Básico */}
+          <TabsContent value="basic" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Nome de Usuário *</Label>
+              <Input
+                id="username"
+                placeholder="seunome"
+                value={formData.username}
+                onChange={(e) => handleInputChange("username", e.target.value)}
+                className={
+                  !isUsernameValid(formData.username) && formData.username
+                    ? "border-red-500"
+                    : ""
+                }
+              />
+              {formData.username && !isUsernameValid(formData.username) && (
+                <p className="text-xs text-red-500">
+                  Use apenas letras, números, _ e - (3-30 caracteres)
+                </p>
+              )}
+              {formData.username && (
+                <p className="text-xs text-gray-500">
+                  Seu link será: {window?.location?.origin || "yoursite.com"}/
+                  {formData.username}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="displayName">Nome de Exibição</Label>
+              <Input
+                id="displayName"
+                placeholder="Seu Nome Completo"
+                value={formData.displayName}
+                onChange={(e) =>
+                  handleInputChange("displayName", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="avatarUrl">URL do Avatar</Label>
+              <Input
+                id="avatarUrl"
+                placeholder="https://exemplo.com/avatar.jpg"
+                value={formData.avatarUrl}
+                onChange={(e) => handleInputChange("avatarUrl", e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio">Biografia</Label>
+              <Textarea
+                id="bio"
+                placeholder="Conte um pouco sobre você..."
+                value={formData.bio}
+                onChange={(e) => handleInputChange("bio", e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="isPublic"
+                checked={formData.isPublic}
+                onCheckedChange={(checked) =>
+                  handleInputChange("isPublic", checked)
+                }
+              />
+              <Label htmlFor="isPublic">Tornar público</Label>
+            </div>
+          </TabsContent>
+
+          {/* Aba Links */}
+          <TabsContent value="links" className="space-y-4">
+            <div className="space-y-4 max-h-[300px] overflow-y-auto">
+              {links.map((link) => (
+                <div
+                  key={link.id}
+                  className="flex items-center gap-2 p-3 border rounded-lg"
+                >
+                  <div className="flex-grow space-y-2">
+                    <Input
+                      placeholder="Título do link"
+                      value={link.title}
+                      onChange={(e) =>
+                        handleLinkChange(link.id, "title", e.target.value)
+                      }
+                    />
+                    <Input
+                      placeholder="URL (https://...)"
+                      value={link.url}
+                      onChange={(e) =>
+                        handleLinkChange(link.id, "url", e.target.value)
+                      }
+                    />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeLink(link.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              onClick={addLink}
+              className="w-full gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Adicionar Link
+            </Button>
+          </TabsContent>
+
+          {/* Aba Aparência */}
+          <TabsContent value="appearance" className="space-y-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Tema</Label>
+                <Tabs
+                  value={formData.theme}
+                  onValueChange={(value) => handleInputChange("theme", value)}
+                >
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="light">Claro</TabsTrigger>
+                    <TabsTrigger value="dark">Escuro</TabsTrigger>
+                    <TabsTrigger value="synthwave">Synthwave</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customColor">Cor de Destaque</Label>
+                <Input
+                  id="customColor"
+                  type="color"
+                  value={formData.customColor}
+                  onChange={(e) =>
+                    handleInputChange("customColor", e.target.value)
+                  }
+                  className="w-full h-10 p-1"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="backgroundImageUrl">
+                  Imagem de Fundo (Opcional)
+                </Label>
+                <Input
+                  id="backgroundImageUrl"
+                  placeholder="https://exemplo.com/background.jpg"
+                  value={formData.backgroundImageUrl}
+                  onChange={(e) =>
+                    handleInputChange("backgroundImageUrl", e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        <div className="flex gap-3 pt-4 border-t">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="flex-1"
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="flex-1"
+            disabled={
+              loading ||
+              !formData.username ||
+              !isUsernameValid(formData.username)
+            }
+          >
+            {loading ? "Criando..." : "Criar Linktree"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

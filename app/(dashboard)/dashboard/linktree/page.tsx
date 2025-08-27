@@ -1,15 +1,15 @@
-import type { Metadata } from "next"
-import { LinktreeCard } from "../components/linktree-card"
+import type { Metadata } from "next";
+import { LinktreeDashboard } from "../components/linktree-dashboard";
 
 export const metadata: Metadata = {
-  title: "LinkTree view - Dashboard",
-  description: "Plataforma de estilização e criação de links",
-}
+  title: "Meus Linktrees - Dashboard",
+  description: "Gerencie todos os seus Linktrees em um só lugar",
+};
 
-export default function Home() {
+export default function DashboardPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-start p-4 pt-8">
-      <LinktreeCard />
+    <main className="flex flex-col items-center justify-start">
+      <LinktreeDashboard />
     </main>
-  )
+  );
 }
