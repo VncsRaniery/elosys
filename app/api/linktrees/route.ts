@@ -56,9 +56,13 @@ export async function POST(request: Request) {
         userId: session.user.id,
         links: {
           create: data.links.map(
-            (link: { title: string; url: string }, index: number) => ({
+            (
+              link: { title: string; url: string; description: string },
+              index: number
+            ) => ({
               title: link.title,
               url: link.url,
+              description: link.description || "",
               order: index,
               isActive: true,
             })

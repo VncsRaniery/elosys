@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PublicLinktreeView } from "./public-linktree-view";
+import { LinktreeCard } from "../(dashboard)/dashboard/teste/linktree-card";
 
 type Props = {
   params: Promise<{ username: string }>
@@ -67,6 +68,7 @@ export default async function PublicLinktreePage({ params }: Props) {
     return (
       <main className="min-h-screen">
         <PublicLinktreeView linktree={linktree} />
+        <LinktreeCard linktree={linktree} />
       </main>
     );
   } catch (error) {

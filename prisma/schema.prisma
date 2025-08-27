@@ -81,14 +81,15 @@ model Linktree {
 }
 
 model Link {
-    id         String   @id @default(cuid())
-    title      String
-    url        String
-    order      Int      @default(0)
-    isActive   Boolean  @default(true)
-    linktreeId String   @map("linktree_id")
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
+    id          String   @id @default(cuid())
+    title       String
+    description String?
+    url         String
+    order       Int      @default(0)
+    isActive    Boolean  @default(true)
+    linktreeId  String   @map("linktree_id")
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
 
     linktree Linktree @relation(fields: [linktreeId], references: [id], onDelete: Cascade)
 

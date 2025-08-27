@@ -35,9 +35,10 @@ export async function PUT(request: NextRequest) {
           isPublic: data.isPublic,
           links: {
             create: data.links.map(
-              (link: { title: string; url: string }, index: number) => ({
+              (link: { title: string; url: string; description: string }, index: number) => ({
                 title: link.title,
                 url: link.url,
+                description: link.description || "",
                 order: index,
                 isActive: true,
               })

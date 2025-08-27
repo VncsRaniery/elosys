@@ -31,6 +31,7 @@ interface LinktreeFormData {
 interface LinkFormData {
   id: number | string;
   title: string;
+  description?: string;
   url: string;
 }
 
@@ -92,7 +93,7 @@ export default function LinktreeDialog({
 
   const handleLinkChange = (
     id: number | string,
-    field: "title" | "url",
+    field: "title" | "description" | "url",
     value: string
   ) => {
     setLinks((prev) =>
@@ -104,6 +105,7 @@ export default function LinktreeDialog({
     const newLink: LinkFormData = {
       id: Date.now(),
       title: "",
+      description: "",
       url: "https://",
     };
     setLinks((prev) => [...prev, newLink]);
@@ -249,6 +251,13 @@ export default function LinktreeDialog({
                       value={link.title}
                       onChange={(e) =>
                         handleLinkChange(link.id, "title", e.target.value)
+                      }
+                    />
+                    <Input
+                      placeholder="Descrição do link"
+                      value={link.description}
+                      onChange={(e) =>
+                        handleLinkChange(link.id, "description", e.target.value)
                       }
                     />
                     <Input
