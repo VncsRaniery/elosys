@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import type { CreateLinktreePayload, Linktree } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Trash2, Plus } from "lucide-react";
-import type { CreateLinktreePayload } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 
-// ✅ Melhora: Tipo extraído para o estado do formulário para reutilização e clareza
 interface LinktreeFormData {
   username: string;
   displayName: string;
@@ -30,38 +29,60 @@ interface LinktreeFormData {
 }
 
 interface LinkFormData {
-  id: number;
+  id: number | string;
   title: string;
   url: string;
 }
+
+const INITIAL_FORM_DATA: LinktreeFormData = {
+  username: "",
+  displayName: "",
+  avatarUrl: "",
+  bio: "",
+  theme: "dark",
+  customColor: "#8A2BE2",
+  backgroundImageUrl: "",
+  isPublic: true,
+};
 
 type LinktreeDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateLinktreePayload) => void;
+  initialData?: Linktree | null;
 };
 
 export default function LinktreeDialog({
   isOpen,
   onClose,
   onSubmit,
+  initialData,
 }: LinktreeDialogProps) {
-  const [formData, setFormData] = useState<LinktreeFormData>({
-    username: "",
-    displayName: "",
-    avatarUrl: "",
-    bio: "",
-    theme: "dark",
-    customColor: "#8A2BE2",
-    backgroundImageUrl: "",
-    isPublic: true,
-  });
+  const isEditMode = !!initialData;
 
+  const [formData, setFormData] = useState<LinktreeFormData>(INITIAL_FORM_DATA);
   const [links, setLinks] = useState<LinkFormData[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // ✨ CÓDIGO CORRIGIDO ✨
-  // A função agora usa generics para garantir a segurança de tipos.
+  useEffect(() => {
+    if (isEditMode && initialData) {
+      setFormData({
+        username: initialData.username,
+        displayName: initialData.displayName || "",
+        avatarUrl: initialData.avatarUrl || "",
+        bio: initialData.bio || "",
+        theme: initialData.theme,
+        customColor: initialData.customColor,
+        backgroundImageUrl: initialData.backgroundImageUrl || "",
+        isPublic: initialData.isPublic,
+      });
+      setLinks(initialData.links || []);
+    } else {
+      setFormData(INITIAL_FORM_DATA);
+      setLinks([]);
+    }
+  }, [initialData, isEditMode, isOpen]);
+
   const handleInputChange = <K extends keyof LinktreeFormData>(
     field: K,
     value: LinktreeFormData[K]
@@ -69,7 +90,11 @@ export default function LinktreeDialog({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleLinkChange = (id: number, field: "title" | "url", value: string) => {
+  const handleLinkChange = (
+    id: number | string,
+    field: "title" | "url",
+    value: string
+  ) => {
     setLinks((prev) =>
       prev.map((link) => (link.id === id ? { ...link, [field]: value } : link))
     );
@@ -84,12 +109,12 @@ export default function LinktreeDialog({
     setLinks((prev) => [...prev, newLink]);
   };
 
-  const removeLink = (id: number) => {
+  const removeLink = (id: number | string) => {
     setLinks((prev) => prev.filter((link) => link.id !== id));
   };
 
   const handleSubmit = async () => {
-    if (!formData.username.trim()) {
+    if (!formData.username.trim() || !isUsernameValid(formData.username)) {
       return;
     }
 
@@ -97,23 +122,10 @@ export default function LinktreeDialog({
     try {
       const payload: CreateLinktreePayload = {
         ...formData,
-        links: links.map(({...linkData }) => linkData),
+        links: links.map(({ title, url }) => ({ title, url })),
       };
 
       await onSubmit(payload);
-
-      // Reset form
-      setFormData({
-        username: "",
-        displayName: "",
-        avatarUrl: "",
-        bio: "",
-        theme: "dark",
-        customColor: "#8A2BE2",
-        backgroundImageUrl: "",
-        isPublic: true,
-      });
-      setLinks([]);
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
@@ -129,9 +141,13 @@ export default function LinktreeDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Criar Novo Linktree</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? "Editar Linktree" : "Criar Novo Linktree"}
+          </DialogTitle>
           <DialogDescription>
-            Preencha as informações para criar seu novo Linktree
+            {isEditMode
+              ? "Atualize as informações do seu Linktree."
+              : "Preencha as informações para criar seu novo Linktree."}
           </DialogDescription>
         </DialogHeader>
 
@@ -156,6 +172,7 @@ export default function LinktreeDialog({
                     ? "border-red-500"
                     : ""
                 }
+                disabled={isEditMode}
               />
               {formData.username && !isUsernameValid(formData.username) && (
                 <p className="text-xs text-red-500">
@@ -164,8 +181,11 @@ export default function LinktreeDialog({
               )}
               {formData.username && (
                 <p className="text-xs text-gray-500">
-                  Seu link será: {typeof window !== 'undefined' ? window.location.origin : 'yoursite.com'}/
-                  {formData.username}
+                  Seu link será:{" "}
+                  {typeof window !== "undefined"
+                    ? window.location.origin
+                    : "yoursite.com"}
+                  /{formData.username}
                 </p>
               )}
             </div>
@@ -315,7 +335,14 @@ export default function LinktreeDialog({
               !isUsernameValid(formData.username)
             }
           >
-            {loading ? "Criando..." : "Criar Linktree"}
+            {/* ALTERADO: Texto do botão dinâmico */}
+            {loading
+              ? isEditMode
+                ? "Salvando..."
+                : "Criando..."
+              : isEditMode
+              ? "Salvar Alterações"
+              : "Criar Linktree"}
           </Button>
         </div>
       </DialogContent>

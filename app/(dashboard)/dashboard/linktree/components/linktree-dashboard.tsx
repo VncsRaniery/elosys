@@ -23,6 +23,7 @@ import {
 
 export function LinktreeDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingLinktree, setEditingLinktree] = useState<Linktree | null>(null);
   const [linktrees, setLinktrees] = useState<Linktree[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +85,49 @@ export function LinktreeDashboard() {
       const message =
         error instanceof Error ? error.message : "Falha ao deletar Linktree";
       toast.error(message);
+    }
+  };
+
+  /* ===== Atualizando Linktreee Existentes ===== */
+  const updateLinktree = async (id: string, data: CreateLinktreePayload) => {
+    try {
+      const response = await fetch(`/api/linktrees/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Falha ao atualizar o Linktree");
+      }
+
+      const updatedLinktree = await response.json();
+      setLinktrees((prev) =>
+        prev.map((lt) => (lt.id === id ? updatedLinktree : lt))
+      );
+      handleCloseDialog();
+      toast.success("Linktree atualizado com sucesso!");
+    } catch (error) {
+      console.error("Error updating linktree:", error);
+      toast.error("Erro ao atualizar o Linktree.");
+    }
+  };
+
+  const handleOpenEditDialog = (linktree: Linktree) => {
+    setEditingLinktree(linktree);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setEditingLinktree(null);
+  };
+
+  const handleFormSubmit = async (data: CreateLinktreePayload) => {
+    if (editingLinktree) {
+      await updateLinktree(editingLinktree.id, data);
+    } else {
+      await addLinktree(data);
     }
   };
 
@@ -196,7 +240,12 @@ export function LinktreeDashboard() {
                     <Eye className="h-3 w-3" />
                     Visualizar
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    onClick={() => handleOpenEditDialog(linktree)}
+                  >
                     <Edit className="h-3 w-3" />
                     Editar
                   </Button>
@@ -253,11 +302,11 @@ export function LinktreeDashboard() {
           ))}
         </div>
       )}
-
       <LinktreeDialog
         isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        onSubmit={addLinktree}
+        onClose={handleCloseDialog}
+        onSubmit={handleFormSubmit}
+        initialData={editingLinktree}
       />
     </div>
   );
