@@ -1,24 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Eye, Edit, Trash2, Copy } from "lucide-react";
+import { Plus, Eye, Edit, Trash2, Copy, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CreateLinktreeModal } from "./create-linktree-modal";
-import { EditLinktreeModal } from "./edit-linktree-modal";
-import { Linktree } from "@/types";
+import { CreateLinktreePayload, Linktree } from "@/types";
 import { toast } from "sonner";
+import LinktreeDialog from "./linktree-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function LinktreeDashboard() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [linktrees, setLinktrees] = useState<Linktree[]>([]);
   const [loading, setLoading] = useState(true);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingLinktree, setEditingLinktree] = useState<Linktree | null>(null);
 
-  // Buscar Linktrees do usuário
+  /* ===== Buscar Linktrees já criados ===== */
   const fetchLinktrees = async () => {
     try {
       setLoading(true);
@@ -38,67 +46,44 @@ export function LinktreeDashboard() {
     fetchLinktrees();
   }, []);
 
-  const handleCreateLinktree = async (data: any) => {
+  /* ===== Adicionando novos Linktrees ===== */
+  const addLinktree = async (data: CreateLinktreePayload) => {
     try {
       const response = await fetch("/api/linktrees", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create linktree");
-      }
-
+      if (!response.ok) throw new Error("Failed to create linktree");
       const newLinktree = await response.json();
-      setLinktrees([newLinktree, ...linktrees]);
-      setCreateModalOpen(false);
-      toast.success("Linktree criado com sucesso!");
-    } catch (error: any) {
-      console.error("Error creating linktree:", error);
-      toast.error(error.message || "Erro ao criar Linktree");
-    }
-  };
-
-  const handleUpdateLinktree = async (id: string, data: any) => {
-    try {
-      const response = await fetch(`/api/linktrees/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) throw new Error("Failed to update linktree");
-
-      const updatedLinktree = await response.json();
-      setLinktrees(
-        linktrees.map((lt) => (lt.id === id ? updatedLinktree : lt))
-      );
-      setEditModalOpen(false);
-      setEditingLinktree(null);
-      toast.success("Linktree atualizado com sucesso!");
+      setLinktrees((prev) => [...prev, newLinktree]);
+      setIsDialogOpen(false);
+      toast.success("Linktree criado com sucesso");
     } catch (error) {
-      console.error("Error updating linktree:", error);
-      toast.error("Erro ao atualizar Linktree");
+      console.error("Error creating linktree:", error);
+      toast.error("Erro ao criar Linktree");
     }
   };
 
-  const handleDeleteLinktree = async (id: string) => {
-    if (!confirm("Tem certeza que deseja deletar este Linktree?")) return;
-
+  /* ===== Deletando Linktreee Existentes ===== */
+  const deleteLinktree = async (linktreeId: string) => {
     try {
-      const response = await fetch(`/api/linktrees/${id}`, {
+      const response = await fetch(`/api/linktrees/${linktreeId}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) throw new Error("Failed to delete linktree");
-
-      setLinktrees(linktrees.filter((lt) => lt.id !== id));
-      toast.success("Linktree deletado com sucesso!");
+      if (!response.ok) {
+        throw new Error("Falha ao deletar Linktree");
+      }
+      setLinktrees((prev) =>
+        prev.filter((linktree) => linktree.id !== linktreeId)
+      );
+      toast.success("Linktree deletado com sucesso");
     } catch (error) {
-      console.error("Error deleting linktree:", error);
-      toast.error("Erro ao deletar Linktree");
+      const message =
+        error instanceof Error ? error.message : "Falha ao deletar Linktree";
+      toast.error(message);
     }
   };
 
@@ -129,31 +114,27 @@ export function LinktreeDashboard() {
             Gerencie todos os seus Linktrees em um só lugar
           </p>
         </div>
-        <Button onClick={() => setCreateModalOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Criar Novo Linktree
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          className="flex-1 sm:flex-none"
+        >
+          <PlusIcon className="h-4 w-4" /> Adicionar um novo Linktree
         </Button>
       </div>
 
       {linktrees.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="max-w-md mx-auto">
-            <div className="mb-4">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto">
-                <Plus className="h-8 w-8 text-gray-400" />
-              </div>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Nenhum Linktree encontrado
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Comece criando seu primeiro Linktree para compartilhar seus links
-            </p>
-            <Button onClick={() => setCreateModalOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Criar Primeiro Linktree
-            </Button>
+        <div
+          className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="mb-4 flex size-16 items-center justify-center rounded-full border border-dashed">
+            <Plus className="h-8 w-8 text-gray-400" />
           </div>
+          <h3 className="text-lg font-semibold">Nenhum Linktree encontrado</h3>
+          <p className="text-muted-foreground mt-2 max-w-xs text-sm">
+            Comece criando seu primeiro Linktree para compartilhar seus links
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -199,7 +180,6 @@ export function LinktreeDashboard() {
                 )}
 
                 <div className="text-sm text-gray-500 mb-4">
-                  <span>{linktree.links.length} links</span>
                   <span className="mx-2">•</span>
                   <span>Tema: {linktree.theme}</span>
                 </div>
@@ -216,15 +196,7 @@ export function LinktreeDashboard() {
                     <Eye className="h-3 w-3" />
                     Visualizar
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingLinktree(linktree);
-                      setEditModalOpen(true);
-                    }}
-                    className="gap-1"
-                  >
+                  <Button size="sm" variant="outline" className="gap-1">
                     <Edit className="h-3 w-3" />
                     Editar
                   </Button>
@@ -237,15 +209,37 @@ export function LinktreeDashboard() {
                     <Copy className="h-3 w-3" />
                     Copiar Link
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDeleteLinktree(linktree.id)}
-                    className="gap-1 text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                    Deletar
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 text-red-400 hover:text-red-500"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Deletar
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Tem certeza de que deseja excluir esta tarefa?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação não pode ser desfeita. Isso excluirá
+                          permanentemente a tarefa.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteLinktree(linktree.id)}
+                        >
+                          Deletar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -260,20 +254,11 @@ export function LinktreeDashboard() {
         </div>
       )}
 
-      <CreateLinktreeModal
-        open={createModalOpen}
-        onOpenChange={setCreateModalOpen}
-        onSubmit={handleCreateLinktree}
+      <LinktreeDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={addLinktree}
       />
-
-      {editingLinktree && (
-        <EditLinktreeModal
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
-          linktree={editingLinktree}
-          onSubmit={(data) => handleUpdateLinktree(editingLinktree.id, data)}
-        />
-      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -9,16 +9,10 @@ export async function GET() {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({
-      where: { id: session.user.id },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
     const linktrees = await db.linktree.findMany({
-      where: { userId: user.id },
+      where: {
+        userId: session.user.id,
+      },
       include: {
         links: {
           orderBy: { order: "asc" },
@@ -29,85 +23,55 @@ export async function GET() {
 
     return NextResponse.json(linktrees);
   } catch (error) {
-    console.error("Error fetching linktrees:", error);
+    console.error("Falha ao buscar links:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Falha ao buscar links" },
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
-    }
 
-    const user = await db.user.findUnique({
-      where: { id: session.user.id },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const body = await request.json();
-    const {
-      username,
-      displayName,
-      avatarUrl,
-      bio,
-      theme = "dark",
-      customColor = "#8A2BE2",
-      backgroundImageUrl,
-      isPublic = true,
-      links = [],
-    } = body;
-
-    const existingLinktree = await db.linktree.findUnique({
-      where: { username },
-    });
-
-    if (existingLinktree) {
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: "Username already exists" },
-        { status: 409 }
+        { error: "Usuário não autenticado" },
+        { status: 401 }
       );
     }
 
+    const data = await request.json();
     const linktree = await db.linktree.create({
       data: {
-        username,
-        displayName,
-        avatarUrl,
-        bio,
-        theme,
-        customColor,
-        backgroundImageUrl,
-        isPublic,
-        userId: user.id,
+        username: data.username,
+        displayName: data.displayName,
+        avatarUrl: data.avatarUrl,
+        bio: data.bio,
+        theme: data.theme,
+        customColor: data.customColor,
+        backgroundImageUrl: data.backgroundImageUrl,
+        isPublic: data.isPublic,
+        userId: session.user.id,
         links: {
-          create: links.map((link: any, index: number) => ({
-            title: link.title,
-            url: link.url,
-            order: index,
-            isActive: true,
-          })),
-        },
-      },
-      include: {
-        links: {
-          orderBy: { order: "asc" },
+          create: data.links.map(
+            (link: { title: string; url: string }, index: number) => ({
+              title: link.title,
+              url: link.url,
+              order: index,
+              isActive: true,
+            })
+          ),
         },
       },
     });
 
-    return NextResponse.json(linktree, { status: 201 });
+    return NextResponse.json(linktree);
   } catch (error) {
-    console.error("Error creating linktree:", error);
+    console.error("Falha ao criar linktree:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Falha ao criar linktree" },
       { status: 500 }
     );
   }

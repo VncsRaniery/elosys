@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Linktree } from "@/types";
-import { GetSocialIcon } from "../(dashboard)/dashboard/components/icons";
+import { GetSocialIcon } from "@/utils/icons";
 
 const themeClasses = {
   light: "bg-gray-100 text-gray-900",

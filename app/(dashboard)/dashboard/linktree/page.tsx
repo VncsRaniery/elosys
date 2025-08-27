@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LinktreeDashboard } from "../components/linktree-dashboard";
+import { LinktreeDashboard } from "./components/linktree-dashboard";
 
 export const metadata: Metadata = {
   title: "Meus Linktrees - Dashboard",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,16 +10,23 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Trash2, Plus } from "lucide-react";
+import type { CreateLinktreePayload } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreateLinktreePayload } from "@/types";
+import { Switch } from "@/components/ui/switch";
 
-interface CreateLinktreeModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CreateLinktreePayload) => void;
+// ✅ Melhora: Tipo extraído para o estado do formulário para reutilização e clareza
+interface LinktreeFormData {
+  username: string;
+  displayName: string;
+  avatarUrl: string;
+  bio: string;
+  theme: string;
+  customColor: string;
+  backgroundImageUrl: string;
+  isPublic: boolean;
 }
 
 interface LinkFormData {
@@ -29,12 +35,18 @@ interface LinkFormData {
   url: string;
 }
 
-export function CreateLinktreeModal({
-  open,
-  onOpenChange,
+type LinktreeDialogProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: CreateLinktreePayload) => void;
+};
+
+export default function LinktreeDialog({
+  isOpen,
+  onClose,
   onSubmit,
-}: CreateLinktreeModalProps) {
-  const [formData, setFormData] = useState({
+}: LinktreeDialogProps) {
+  const [formData, setFormData] = useState<LinktreeFormData>({
     username: "",
     displayName: "",
     avatarUrl: "",
@@ -48,11 +60,16 @@ export function CreateLinktreeModal({
   const [links, setLinks] = useState<LinkFormData[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (field: string, value: any) => {
+  // ✨ CÓDIGO CORRIGIDO ✨
+  // A função agora usa generics para garantir a segurança de tipos.
+  const handleInputChange = <K extends keyof LinktreeFormData>(
+    field: K,
+    value: LinktreeFormData[K]
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleLinkChange = (id: number, field: string, value: string) => {
+  const handleLinkChange = (id: number, field: "title" | "url", value: string) => {
     setLinks((prev) =>
       prev.map((link) => (link.id === id ? { ...link, [field]: value } : link))
     );
@@ -80,10 +97,7 @@ export function CreateLinktreeModal({
     try {
       const payload: CreateLinktreePayload = {
         ...formData,
-        links: links.map((link) => ({
-          title: link.title,
-          url: link.url,
-        })),
+        links: links.map(({...linkData }) => linkData),
       };
 
       await onSubmit(payload);
@@ -112,7 +126,7 @@ export function CreateLinktreeModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Criar Novo Linktree</DialogTitle>
@@ -129,7 +143,7 @@ export function CreateLinktreeModal({
           </TabsList>
 
           {/* Aba Básico */}
-          <TabsContent value="basic" className="space-y-4">
+          <TabsContent value="basic" className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label htmlFor="username">Nome de Usuário *</Label>
               <Input
@@ -150,7 +164,7 @@ export function CreateLinktreeModal({
               )}
               {formData.username && (
                 <p className="text-xs text-gray-500">
-                  Seu link será: {window?.location?.origin || "yoursite.com"}/
+                  Seu link será: {typeof window !== 'undefined' ? window.location.origin : 'yoursite.com'}/
                   {formData.username}
                 </p>
               )}
@@ -202,8 +216,8 @@ export function CreateLinktreeModal({
           </TabsContent>
 
           {/* Aba Links */}
-          <TabsContent value="links" className="space-y-4">
-            <div className="space-y-4 max-h-[300px] overflow-y-auto">
+          <TabsContent value="links" className="space-y-4 pt-4">
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
               {links.map((link) => (
                 <div
                   key={link.id}
@@ -247,64 +261,54 @@ export function CreateLinktreeModal({
           </TabsContent>
 
           {/* Aba Aparência */}
-          <TabsContent value="appearance" className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Tema</Label>
-                <Tabs
-                  value={formData.theme}
-                  onValueChange={(value) => handleInputChange("theme", value)}
-                >
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="light">Claro</TabsTrigger>
-                    <TabsTrigger value="dark">Escuro</TabsTrigger>
-                    <TabsTrigger value="synthwave">Synthwave</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
+          <TabsContent value="appearance" className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Tema</Label>
+              <Tabs
+                value={formData.theme}
+                onValueChange={(value) => handleInputChange("theme", value)}
+              >
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="light">Claro</TabsTrigger>
+                  <TabsTrigger value="dark">Escuro</TabsTrigger>
+                  <TabsTrigger value="synthwave">Synthwave</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="customColor">Cor de Destaque</Label>
-                <Input
-                  id="customColor"
-                  type="color"
-                  value={formData.customColor}
-                  onChange={(e) =>
-                    handleInputChange("customColor", e.target.value)
-                  }
-                  className="w-full h-10 p-1"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="customColor">Cor de Destaque</Label>
+              <Input
+                id="customColor"
+                type="color"
+                value={formData.customColor}
+                onChange={(e) =>
+                  handleInputChange("customColor", e.target.value)
+                }
+                className="w-full h-10 p-1"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="backgroundImageUrl">
-                  Imagem de Fundo (Opcional)
-                </Label>
-                <Input
-                  id="backgroundImageUrl"
-                  placeholder="https://exemplo.com/background.jpg"
-                  value={formData.backgroundImageUrl}
-                  onChange={(e) =>
-                    handleInputChange("backgroundImageUrl", e.target.value)
-                  }
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="backgroundImageUrl">
+                Imagem de Fundo (Opcional)
+              </Label>
+              <Input
+                id="backgroundImageUrl"
+                placeholder="https://exemplo.com/background.jpg"
+                value={formData.backgroundImageUrl}
+                onChange={(e) =>
+                  handleInputChange("backgroundImageUrl", e.target.value)
+                }
+              />
             </div>
           </TabsContent>
         </Tabs>
 
-        <div className="flex gap-3 pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className="flex-1"
-            disabled={loading}
-          >
-            Cancelar
-          </Button>
+        <div className="flex justify-end pt-4 border-t">
           <Button
             onClick={handleSubmit}
-            className="flex-1"
+            className="w-full"
             disabled={
               loading ||
               !formData.username ||
