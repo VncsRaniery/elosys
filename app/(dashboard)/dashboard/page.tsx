@@ -54,9 +54,9 @@ export default function WelcomePage() {
             <span className="capitalize">{currentDate}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Bem-vindo ao seu{" "}
+            Bem-vindo ao{" "}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              LinkTree!
+              LinkUp!
             </span>
             👋
           </h1>
