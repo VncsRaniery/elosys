@@ -1,91 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
-import { ZapIcon } from "lucide-react";
+import { ZapIcon, SparklesIcon } from "lucide-react";
 
 export default function Home() {
-  const { data: session } = useSession();
   return (
-    <main
-      className="min-h-screen flex items-center justify-center"
-      style={{
-        background: "radial-gradient(circle at center, #1E40AF, #000000)",
-      }}
-    >
-      <div className="bg-pattern"></div>
-      <div className="content w-full">
-        <div className="w-full max-w-xl mx-auto p-8 flex flex-col justify-between min-h-screen">
-          <div className="flex-1 flex flex-col justify-center items-center text-center">
-            <div>
-              <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-br from-gray-200 to-gray-600">
-                Bem vindo ao LinkUp
+    <main className="min-h-screen relative overflow-hidden">
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900"></div>
+
+      {/* Animated grid pattern */}
+      <div className="fixed inset-0 opacity-20">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]"></div>
+      </div>
+
+      {/* Floating orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
+
+      <div className="relative z-10 min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-2xl mx-auto text-center space-y-12">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
+                <SparklesIcon className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-medium text-blue-300">
+                  Sua presença digital em um só lugar
+                </span>
+              </div>
+
+              <h1 className="text-5xl sm:text-7xl font-bold bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-transparent leading-tight">
+                LinkUp
               </h1>
-            </div>
-            <div>
-              <p className="text-lg sm:text-xl mb-8 text-gray-300">
-                Crie e personalize sua página de links em minutos. Conecte todas
-                suas redes sociais e conteúdos em um só lugar com nosso editor
-                intuitivo.
+
+              <p className="text-xl sm:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
+                Conecte todas suas redes sociais e conteúdos em uma página
+                elegante e personalizada
               </p>
             </div>
-            <div className="w-full space-y-4">
-              {session ? (
-                <div className="flex justify-center">
-                  <Link href="/dashboard">
-                    <Button
-                      size="lg"
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-                    >
-                      Dashboard
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex justify-center items-center gap-x-4">
-                  <Link href="/registrar">
-                    <Button
-                      size="lg"
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-                    >
-                      Criar Conta
-                    </Button>
-                  </Link>
-                  <Link href="/login">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="border-gray-600 text-gray-200 hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors bg-transparent"
-                    >
-                      Fazer Login
-                      <ZapIcon className="size-3.5 ml-1.5 text-blue-500 fill-blue-500" />
-                    </Button>
-                  </Link>
-                </div>
-              )}
+
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <Link href="/registrar">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25 border-0 w-full sm:w-auto"
+                  >
+                    Começar Agora
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-slate-600/50 text-slate-200 hover:bg-slate-800/50 font-semibold px-8 py-4 rounded-2xl transition-all duration-300 bg-slate-900/20 backdrop-blur-sm hover:border-slate-500 w-full sm:w-auto"
+                  >
+                    Fazer Login
+                    <ZapIcon className="w-4 h-4 ml-2 text-blue-400" />
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="mt-8">
-              <p className="text-sm text-gray-400">
-                ✨ Editor visual intuitivo • 🎨 Templates personalizáveis • 📊
-                Analytics detalhados
-              </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8">
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-xl bg-slate-900/20 backdrop-blur-sm border border-slate-700/30">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <span className="text-blue-400 text-lg">✨</span>
+                </div>
+                <span className="text-sm font-medium text-slate-300">
+                  Editor Visual
+                </span>
+              </div>
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-xl bg-slate-900/20 backdrop-blur-sm border border-slate-700/30">
+                <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                  <span className="text-purple-400 text-lg">🎨</span>
+                </div>
+                <span className="text-sm font-medium text-slate-300">
+                  Templates Únicos
+                </span>
+              </div>
+              <div className="flex flex-col items-center space-y-2 p-4 rounded-xl bg-slate-900/20 backdrop-blur-sm border border-slate-700/30">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                  <span className="text-cyan-400 text-lg">📊</span>
+                </div>
+                <span className="text-sm font-medium text-slate-300">
+                  Analytics Avançados
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <Toaster
-        toastOptions={{
-          style: {
-            background: "rgb(23 23 23)",
-            color: "white",
-            border: "1px solid rgb(63 63 70)",
-          },
-          className: "rounded-xl",
-          duration: 5000,
-        }}
-      />
     </main>
   );
 }
