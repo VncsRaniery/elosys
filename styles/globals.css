@@ -76,6 +76,32 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* ===== MINHAS VARIÁVEIS DE GRADIENTES PARA TEMAS DO LINKTREE ===== */
+  /* Temas do Shadcn */
+  --tema-claro: oklch(1 0 0);
+  --background: oklch(0.145 0 0);
+
+  /* Gradientes Azuis */
+  --gradiente-ceu-sereno: linear-gradient(to right, #89f7fe, #66a6ff);
+  --gradiente-oceano-profundo: radial-gradient(circle, #243949, #517fa4);
+
+  /* Gradientes Verdes */
+  --gradiente-frescor-menta: linear-gradient(to right, #acb6e5, #86fde8);
+  --gradiente-floresta-mistica: linear-gradient(
+    135deg,
+    #2d5a27,
+    #2c7744,
+    #1f4037
+  );
+
+  /* Gradientes Vermelhos */
+  --gradiente-por-do-sol: linear-gradient(to right, #ff416c, #ff4b2b);
+  --gradiente-fogo-suave: radial-gradient(ellipse at center, #ff512f, #dd2476);
+
+  /* Gradientes Cinzas */
+  --gradiente-aco-escovado: linear-gradient(to right, #e2e2e2, #c9d6ff);
+  --gradiente-noite-nublada: linear-gradient(to top, #232526, #414345);
 }
 
 .dark {
@@ -141,4 +167,23 @@
 .content {
   position: relative;
   z-index: 2;
+}
+
+/* Os estilos para os gradientes animados ainda precisam de suas próprias classes */
+@keyframes gradiente-animado {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradiente-aurora-verde {
+  background: linear-gradient(-45deg, #6a9113, #141517, #4cb8c4, #3cd3ad);
+  background-size: 400% 400%;
+  animation: gradiente-animado 15s ease infinite;
 }

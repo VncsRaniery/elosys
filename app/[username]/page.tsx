@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { LinktreeCard } from "./linktree-card";
-import PageError from "./page-.error";
+import PageError from "./page-error";
+
+const baseUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_URL
+    : process.env.NEXT_DEVELOPMENT_URL;
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -8,14 +13,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/api/public/${
-        (
-          await params
-        ).username
-      }`,
-      { cache: "no-store" }
-    );
+    const { username } = await params;
+    const response = await fetch(`${baseUrl}/api/public/${username}`, {
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       return {
@@ -53,14 +54,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PublicLinktreePage({ params }: Props) {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/api/public/${
-        (
-          await params
-        ).username
-      }`,
-      { cache: "no-store" }
-    );
+    const { username } = await params;
+    const response = await fetch(`${baseUrl}/api/public/${username}`, {
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       return <PageError />;
@@ -75,5 +72,6 @@ export default async function PublicLinktreePage({ params }: Props) {
     );
   } catch (error) {
     console.error("Error fetching linktree:", error);
+    return <PageError />;
   }
 }

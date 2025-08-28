@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Trash2, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import GradientPicker from "./gradient-picker";
+import ImageUploader from "./image-upload-field";
 
 interface LinktreeFormData {
   username: string;
@@ -40,7 +42,7 @@ const INITIAL_FORM_DATA: LinktreeFormData = {
   displayName: "",
   avatarUrl: "",
   bio: "",
-  theme: "dark",
+  theme: "escuro",
   customColor: "#8A2BE2",
   backgroundImageUrl: "",
   isPublic: true,
@@ -61,7 +63,8 @@ export default function LinktreeDialog({
 }: LinktreeDialogProps) {
   const isEditMode = !!initialData;
 
-  const [formData, setFormData] = useState<LinktreeFormData>(INITIAL_FORM_DATA);
+  const [formData, setFormData] =
+    useState<LinktreeFormData>(INITIAL_FORM_DATA);
   const [links, setLinks] = useState<LinkFormData[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -115,6 +118,10 @@ export default function LinktreeDialog({
     setLinks((prev) => prev.filter((link) => link.id !== id));
   };
 
+  const isUsernameValid = (username: string) => {
+    return /^[a-zA-Z0-9_-]{3,30}$/.test(username);
+  };
+
   const handleSubmit = async () => {
     if (!formData.username.trim() || !isUsernameValid(formData.username)) {
       return;
@@ -138,9 +145,6 @@ export default function LinktreeDialog({
     }
   };
 
-  const isUsernameValid = (username: string) => {
-    return /^[a-zA-Z0-9_-]{3,30}$/.test(username);
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -158,12 +162,12 @@ export default function LinktreeDialog({
 
         <Tabs defaultValue="basic" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="basic">Básico</TabsTrigger>
+            <TabsTrigger value="basic">Informações</TabsTrigger>
             <TabsTrigger value="links">Links</TabsTrigger>
             <TabsTrigger value="appearance">Aparência</TabsTrigger>
           </TabsList>
 
-          {/* Aba Básico */}
+          {/* Aba Informações */}
           <TabsContent value="basic" className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label htmlFor="username">Nome de Usuário *</Label>
@@ -171,7 +175,9 @@ export default function LinktreeDialog({
                 id="username"
                 placeholder="seunome"
                 value={formData.username}
-                onChange={(e) => handleInputChange("username", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("username", e.target.value)
+                }
                 className={
                   !isUsernameValid(formData.username) && formData.username
                     ? "border-red-500"
@@ -207,15 +213,11 @@ export default function LinktreeDialog({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="avatarUrl">URL do Avatar</Label>
-              <Input
-                id="avatarUrl"
-                placeholder="https://exemplo.com/avatar.jpg"
-                value={formData.avatarUrl}
-                onChange={(e) => handleInputChange("avatarUrl", e.target.value)}
-              />
-            </div>
+            <ImageUploader
+              label="Avatar"
+              initialUrl={formData.avatarUrl}
+              onUploadComplete={(url) => handleInputChange("avatarUrl", url)}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="bio">Biografia</Label>
@@ -292,48 +294,22 @@ export default function LinktreeDialog({
             </Button>
           </TabsContent>
 
+
           {/* Aba Aparência */}
           <TabsContent value="appearance" className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label>Tema</Label>
-              <Tabs
+              <GradientPicker
                 value={formData.theme}
-                onValueChange={(value) => handleInputChange("theme", value)}
-              >
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="light">Claro</TabsTrigger>
-                  <TabsTrigger value="dark">Escuro</TabsTrigger>
-                  <TabsTrigger value="synthwave">Synthwave</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="customColor">Cor de Destaque</Label>
-              <Input
-                id="customColor"
-                type="color"
-                value={formData.customColor}
-                onChange={(e) =>
-                  handleInputChange("customColor", e.target.value)
-                }
-                className="w-full h-10 p-1"
+                onChange={(themeId) => handleInputChange("theme", themeId)}
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="backgroundImageUrl">
-                Imagem de Fundo (Opcional)
-              </Label>
-              <Input
-                id="backgroundImageUrl"
-                placeholder="https://exemplo.com/background.jpg"
-                value={formData.backgroundImageUrl}
-                onChange={(e) =>
-                  handleInputChange("backgroundImageUrl", e.target.value)
-                }
-              />
-            </div>
+            
+            <ImageUploader
+              label="Imagem de Fundo (Opcional)"
+              initialUrl={formData.backgroundImageUrl}
+              onUploadComplete={(url) => handleInputChange("backgroundImageUrl", url)}
+            />
           </TabsContent>
         </Tabs>
 
