@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { PublicLinktreeView } from "./public-linktree-view";
-import { LinktreeCard } from "../(dashboard)/dashboard/teste/linktree-card";
+import { LinktreeCard } from "./linktree-card";
+import PageError from "./page-.error";
 
 type Props = {
-  params: Promise<{ username: string }>
+  params: Promise<{ username: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/api/public/${
-        (await params).username
+        (
+          await params
+        ).username
       }`,
       { cache: "no-store" }
     );
@@ -54,20 +55,21 @@ export default async function PublicLinktreePage({ params }: Props) {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/api/public/${
-        (await params).username
+        (
+          await params
+        ).username
       }`,
       { cache: "no-store" }
     );
 
     if (!response.ok) {
-      notFound();
+      return <PageError />;
     }
 
     const linktree = await response.json();
 
     return (
       <main className="min-h-screen">
-        <PublicLinktreeView linktree={linktree} />
         <LinktreeCard linktree={linktree} />
       </main>
     );

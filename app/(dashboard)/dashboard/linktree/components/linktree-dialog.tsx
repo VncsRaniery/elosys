@@ -124,9 +124,12 @@ export default function LinktreeDialog({
     try {
       const payload: CreateLinktreePayload = {
         ...formData,
-        links: links.map(({ title, url }) => ({ title, url })),
+        links: links.map(({ title, url, description }) => ({
+          title,
+          url,
+          description,
+        })),
       };
-
       await onSubmit(payload);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -344,7 +347,6 @@ export default function LinktreeDialog({
               !isUsernameValid(formData.username)
             }
           >
-            {/* ALTERADO: Texto do botão dinâmico */}
             {loading
               ? isEditMode
                 ? "Salvando..."

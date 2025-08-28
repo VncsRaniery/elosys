@@ -17,6 +17,7 @@ export type Linktree = {
 export interface SocialLink {
   id: string;
   title: string;
+  description?: string;
   url: string;
   order: number;
   isActive: boolean;
