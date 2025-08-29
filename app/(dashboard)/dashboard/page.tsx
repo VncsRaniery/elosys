@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -17,8 +12,10 @@ import {
   Users,
   BarChart3,
   Plus,
+  OctagonAlert,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function WelcomePage() {
   const [currentDate, setCurrentDate] = useState("");
@@ -34,7 +31,6 @@ export default function WelcomePage() {
     setCurrentDate(formattedDate);
   }, []);
 
-  // Mock data - em um app real, estes dados viriam de uma API
   const stats = {
     totalLinks: 24,
     activeLinks: 18,
@@ -43,6 +39,8 @@ export default function WelcomePage() {
     visitors: 456,
     conversionRate: 12.5,
   };
+
+  const analytics = [];
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -68,132 +66,158 @@ export default function WelcomePage() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap justify-center gap-4">
-          <Button size="lg" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Criar Novo Link
-          </Button>
-          <Button size="lg" variant="outline" className="gap-2 bg-transparent">
-            <BarChart3 className="h-4 w-4" />
-            Ver Análises
-          </Button>
+          <Link href="/dashboard/linkups">
+            <Button size="lg" className="gap-2">
+              <Plus className="h-4 w-4" />
+              Ver meus LinkUps
+            </Button>
+          </Link>
+          <Link href="/dashboard/analises">
+            <Button size="lg" variant="outline" className="gap-2 bg-transparent">
+              <BarChart3 className="h-4 w-4" />
+              Ver Análises
+            </Button>
+          </Link>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Total Links */}
-          <Card className="backdrop-blur-sm bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Links Criados
-              </CardTitle>
-              <Link2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-primary">
-                {stats.totalLinks}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Total de links no seu perfil
-              </p>
-            </CardContent>
-          </Card>
+        {analytics.length === 0 ? (
+          <div
+            className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="mb-4 flex size-16 items-center justify-center rounded-full border border-dashed">
+              <OctagonAlert className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold">
+              Os dados de Análises dos seus LinkUps ainda estão em
+              desenvolvimento
+            </h3>
+            <p className="text-muted-foreground mt-2 max-w-xs text-sm">
+              Porém nada impede você de criar seus LinkUps e começar a
+              compartilhar ele. No futuro suas análises estarão disponíveis
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Total Links */}
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Links Criados
+                </CardTitle>
+                <Link2 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-primary">
+                  {stats.totalLinks}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Total de links no seu perfil
+                </p>
+              </CardContent>
+            </Card>
 
-          {/* Active Links */}
-          <Card className="backdrop-blur-sm bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Links Ativos
-              </CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-secondary">
-                {stats.activeLinks}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Links visíveis no seu perfil
-              </p>
-              <Badge variant="secondary" className="mt-2">
-                {Math.round((stats.activeLinks / stats.totalLinks) * 100)}%
-                ativos
-              </Badge>
-            </CardContent>
-          </Card>
+            {/* Active Links */}
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Links Ativos
+                </CardTitle>
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-secondary">
+                  {stats.activeLinks}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Links visíveis no seu perfil
+                </p>
+                <Badge variant="secondary" className="mt-2">
+                  {Math.round((stats.activeLinks / stats.totalLinks) * 100)}%
+                  ativos
+                </Badge>
+              </CardContent>
+            </Card>
 
-          {/* Total Clicks */}
-          <Card className="backdrop-blur-sm bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total de Cliques
-              </CardTitle>
-              <MousePointer className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats.totalClicks.toLocaleString()}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Cliques em todos os seus links
-              </p>
-            </CardContent>
-          </Card>
+            {/* Total Clicks */}
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total de Cliques
+                </CardTitle>
+                <MousePointer className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {stats.totalClicks.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Cliques em todos os seus links
+                </p>
+              </CardContent>
+            </Card>
 
-          {/* Today's Clicks */}
-          <Card className="backdrop-blur-sm bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Cliques Hoje
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-accent">
-                {stats.todayClicks}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Cliques nas últimas 24 horas
-              </p>
-              <Badge variant="outline" className="mt-2">
-                +15% vs ontem
-              </Badge>
-            </CardContent>
-          </Card>
+            {/* Today's Clicks */}
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Cliques Hoje
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-accent">
+                  {stats.todayClicks}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Cliques nas últimas 24 horas
+                </p>
+                <Badge variant="outline" className="mt-2">
+                  +15% vs ontem
+                </Badge>
+              </CardContent>
+            </Card>
 
-          {/* Visitors */}
-          <Card className="backdrop-blur-sm bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Visitantes Únicos
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.visitors}</div>
-              <p className="text-xs text-muted-foreground">
-                Visitantes únicos este mês
-              </p>
-            </CardContent>
-          </Card>
+            {/* Visitors */}
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Visitantes Únicos
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.visitors}</div>
+                <p className="text-xs text-muted-foreground">
+                  Visitantes únicos este mês
+                </p>
+              </CardContent>
+            </Card>
 
-          {/* Conversion Rate */}
-          <Card className="backdrop-blur-sm bg-card/50">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Taxa de Conversão
-              </CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.conversionRate}%</div>
-              <p className="text-xs text-muted-foreground">
-                Visitantes que clicaram em links
-              </p>
-              <Badge variant="secondary" className="mt-2">
-                Excelente
-              </Badge>
-            </CardContent>
-          </Card>
-        </div>
+            {/* Conversion Rate */}
+            <Card className="backdrop-blur-sm bg-card/50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Taxa de Conversão
+                </CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {stats.conversionRate}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Visitantes que clicaram em links
+                </p>
+                <Badge variant="secondary" className="mt-2">
+                  Excelente
+                </Badge>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Recent Activity */}
         {/* <Card className="backdrop-blur-sm bg-card/50">

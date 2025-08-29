@@ -19,6 +19,7 @@ const navigationLinks = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/dashboard/linkups", label: "Meus LinkUps" },
+  { href: "/dashboard/analises", label: "Análises" },
 ];
 
 export default function ComponentNavbar() {

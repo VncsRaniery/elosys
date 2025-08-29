@@ -34,18 +34,17 @@ export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
 
   return (
     <div
-      className={`relative min-h-screen w-full flex flex-col items-center justify-center p-4 transition-colors duration-500 ${backgroundClass}`}
+      className={`relative min-h-screen w-full transition-colors duration-500 ${backgroundClass}`}
       style={backgroundStyle}
     >
       <Link
         href="/"
-        className="bg-card rounded-full absolute top-6 left-6 w-12 h-12 flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+        className="bg-card rounded-full absolute top-6 left-6 w-12 h-12 flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors z-10"
         aria-label="Voltar para a página inicial"
       >
         <Logo />
       </Link>
-
-      <main className="flex flex-col items-center w-full">
+      <main className="min-h-screen w-full flex flex-col items-center justify-center px-4 pt-24 pb-8">
         {/* Card Principal do Linktree */}
         <Card className="w-full max-w-md p-8 bg-card/80 border-border shadow-lg backdrop-blur-sm">
           <div className="flex flex-col items-center text-center mb-8">
@@ -97,8 +96,6 @@ export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
             ))}
           </div>
         </Card>
-
-        {/* Card "Footer" com o botão de redirecionamento */}
         <div className="w-full max-w-md p-4 mt-4">
           <Link href="/dashboard">
             <Button
