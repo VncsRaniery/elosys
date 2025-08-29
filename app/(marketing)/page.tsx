@@ -109,6 +109,11 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <footer className="w-full text-center py-6">
+          <p className="text-slate-400 text-sm">
+            &copy; {new Date().getFullYear()} LinkUp | Feito por VncsRaniery
+          </p>
+        </footer>
       </div>
     </main>
   );
