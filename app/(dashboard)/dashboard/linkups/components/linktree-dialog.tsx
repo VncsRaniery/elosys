@@ -238,7 +238,7 @@ export default function LinktreeDialog({
                   handleInputChange("isPublic", checked)
                 }
               />
-              <Label htmlFor="isPublic">Tornar público</Label>
+              <Label htmlFor="isPublic">Tornar ativo</Label>
             </div>
           </TabsContent>
 

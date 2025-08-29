@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ZapIcon, SparklesIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const { data: session } = useSession()
+
   return (
     <main className="min-h-screen relative overflow-hidden">
       <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900"></div>
@@ -43,6 +46,18 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
+              {session ? (
+              <div className="flex sm:flex-row justify-center items-center">
+                <Link href="/dashboard">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25 border-0 w-full sm:w-auto"
+                  >
+                    Dashboard
+                  </Button>
+                </Link>
+              </div>
+            ) : (
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                 <Link href="/registrar">
                   <Button
@@ -63,6 +78,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8">
