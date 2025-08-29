@@ -32,12 +32,12 @@ export function LinktreeDashboard() {
     try {
       setLoading(true);
       const response = await fetch("/api/linktrees");
-      if (!response.ok) throw new Error("Failed to fetch linktrees");
+      if (!response.ok) throw new Error("Failed to fetch LinkUps");
       const data = await response.json();
       setLinktrees(data);
     } catch (error) {
-      console.error("Error fetching linktrees:", error);
-      toast.error("Erro ao carregar Linktrees");
+      console.error("Error fetching LinkUps:", error);
+      toast.error("Erro ao carregar LinkUps");
     } finally {
       setLoading(false);
     }
@@ -57,38 +57,38 @@ export function LinktreeDashboard() {
         },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Failed to create linktree");
+      if (!response.ok) throw new Error("Failed to create LinkUp");
       const newLinktree = await response.json();
       setLinktrees((prev) => [...prev, newLinktree]);
       setIsDialogOpen(false);
-      toast.success("Linktree criado com sucesso");
+      toast.success("LinkUp criado com sucesso");
     } catch (error) {
-      console.error("Error creating linktree:", error);
-      toast.error("Erro ao criar Linktree");
+      console.error("Error creating LinkUp:", error);
+      toast.error("Erro ao criar LinkUp");
     }
   };
 
-  /* ===== Deletando Linktreee Existentes ===== */
+  /* ===== Deletando LinkUps Existentes ===== */
   const deleteLinktree = async (linktreeId: string) => {
     try {
       const response = await fetch(`/api/linktrees/${linktreeId}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Falha ao deletar Linktree");
+        throw new Error("Falha ao deletar LinkUp");
       }
       setLinktrees((prev) =>
         prev.filter((linktree) => linktree.id !== linktreeId)
       );
-      toast.success("Linktree deletado com sucesso");
+      toast.success("LinkUp deletado com sucesso");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Falha ao deletar Linktree";
+        error instanceof Error ? error.message : "Falha ao deletar LinkUp";
       toast.error(message);
     }
   };
 
-  /* ===== Atualizando Linktreee Existentes ===== */
+  /* ===== Atualizando LinkUps Existentes ===== */
   const updateLinktree = async (id: string, data: CreateLinktreePayload) => {
     try {
       const response = await fetch(`/api/linktrees/${id}`, {
@@ -98,7 +98,7 @@ export function LinktreeDashboard() {
       });
 
       if (!response.ok) {
-        throw new Error("Falha ao atualizar o Linktree");
+        throw new Error("Falha ao atualizar o LinkUp");
       }
 
       const updatedLinktree = await response.json();
@@ -106,10 +106,10 @@ export function LinktreeDashboard() {
         prev.map((lt) => (lt.id === id ? updatedLinktree : lt))
       );
       handleCloseDialog();
-      toast.success("Linktree atualizado com sucesso!");
+      toast.success("LinkUp atualizado com sucesso!");
     } catch (error) {
-      console.error("Error updating linktree:", error);
-      toast.error("Erro ao atualizar o Linktree.");
+      console.error("Error updating LinkUp:", error);
+      toast.error("Erro ao atualizar o LinkUp.");
     }
   };
 
@@ -152,10 +152,10 @@ export function LinktreeDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Meus Linktrees
+            Meus LinkUps
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Gerencie todos os seus Linktrees em um só lugar
+            Gerencie todos os seus LinkUps em um só lugar
           </p>
         </div>
         <Button
@@ -211,7 +211,7 @@ export function LinktreeDashboard() {
                     </div>
                   </div>
                   <Badge variant={linktree.isPublic ? "default" : "secondary"}>
-                    {linktree.isPublic ? "Público" : "Privado"}
+                    {linktree.isPublic ? "Público" : "Desativado"}
                   </Badge>
                 </div>
               </CardHeader>

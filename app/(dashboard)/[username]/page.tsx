@@ -20,15 +20,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!response.ok) {
       return {
-        title: "Linktree não encontrado",
-        description: "Este Linktree não existe ou foi removido",
+        title: "LinkUp não encontrado",
+        description: "Este LinkUp não existe ou foi removido",
       };
     }
 
     const linktree = await response.json();
 
     return {
-      title: `@${linktree.username} - Linktree`,
+      title: `@${linktree.username} - LinkUp`,
       description: linktree.bio || `Links de @${linktree.username}`,
       openGraph: {
         title: `@${linktree.username}`,

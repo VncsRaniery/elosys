@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { CreateLinktreePayload, Linktree } from "@/types";
+import type {
+  CreateLinktreePayload,
+  LinkFormData,
+  Linktree,
+  LinktreeFormData,
+} from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -13,29 +18,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import GradientPicker from "./gradient-picker";
 import ImageUploader from "./image-upload-field";
-
-interface LinktreeFormData {
-  username: string;
-  displayName: string;
-  avatarUrl: string;
-  bio: string;
-  theme: string;
-  customColor: string;
-  backgroundImageUrl: string;
-  isPublic: boolean;
-}
-
-interface LinkFormData {
-  id: number | string;
-  title: string;
-  description?: string;
-  url: string;
-}
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { SortableLinkItem } from "./sortable-link-item";
 
 const INITIAL_FORM_DATA: LinktreeFormData = {
   username: "",
@@ -63,10 +64,17 @@ export default function LinktreeDialog({
 }: LinktreeDialogProps) {
   const isEditMode = !!initialData;
 
-  const [formData, setFormData] =
-    useState<LinktreeFormData>(INITIAL_FORM_DATA);
+  const [formData, setFormData] = useState<LinktreeFormData>(INITIAL_FORM_DATA);
   const [links, setLinks] = useState<LinkFormData[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   useEffect(() => {
     if (isEditMode && initialData) {
@@ -80,7 +88,13 @@ export default function LinktreeDialog({
         backgroundImageUrl: initialData.backgroundImageUrl || "",
         isPublic: initialData.isPublic,
       });
-      setLinks(initialData.links || []);
+      // Garante que o estado dos links também limpe o "https://" para edição
+      setLinks(
+        initialData.links?.map((link) => ({
+          ...link,
+          url: link.url.replace("https://", ""),
+        })) || []
+      );
     } else {
       setFormData(INITIAL_FORM_DATA);
       setLinks([]);
@@ -99,6 +113,7 @@ export default function LinktreeDialog({
     field: "title" | "description" | "url",
     value: string
   ) => {
+    // A lógica para remover "https://"" da URL é movida para o componente SortableLinkItem
     setLinks((prev) =>
       prev.map((link) => (link.id === id ? { ...link, [field]: value } : link))
     );
@@ -109,13 +124,25 @@ export default function LinktreeDialog({
       id: Date.now(),
       title: "",
       description: "",
-      url: "https://",
+      url: "", // <-- MUDANÇA: URL inicial é vazia
     };
     setLinks((prev) => [...prev, newLink]);
   };
 
   const removeLink = (id: number | string) => {
     setLinks((prev) => prev.filter((link) => link.id !== id));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setLinks((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const isUsernameValid = (username: string) => {
@@ -129,11 +156,17 @@ export default function LinktreeDialog({
 
     setLoading(true);
     try {
+      // ✅ MELHORIA: Filtra links vazios antes de enviar
+      const validLinks = links.filter(
+        (link) => link.title.trim() !== "" && link.url.trim() !== ""
+      );
+
       const payload: CreateLinktreePayload = {
         ...formData,
-        links: links.map(({ title, url, description }) => ({
+        links: validLinks.map(({ title, url, description }) => ({
           title,
-          url,
+          // ✅ MELHORIA: Adiciona "https://" de volta para salvar no banco de dados
+          url: `https://${url.replace("https://", "")}`,
           description,
         })),
       };
@@ -144,7 +177,6 @@ export default function LinktreeDialog({
       setLoading(false);
     }
   };
-
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -167,7 +199,7 @@ export default function LinktreeDialog({
             <TabsTrigger value="appearance">Aparência</TabsTrigger>
           </TabsList>
 
-          {/* Aba Informações */}
+          {/* Aba Informações (sem alterações) */}
           <TabsContent value="basic" className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label htmlFor="username">Nome de Usuário *</Label>
@@ -175,9 +207,7 @@ export default function LinktreeDialog({
                 id="username"
                 placeholder="seunome"
                 value={formData.username}
-                onChange={(e) =>
-                  handleInputChange("username", e.target.value)
-                }
+                onChange={(e) => handleInputChange("username", e.target.value)}
                 className={
                   !isUsernameValid(formData.username) && formData.username
                     ? "border-red-500"
@@ -217,6 +247,7 @@ export default function LinktreeDialog({
               label="Avatar"
               initialUrl={formData.avatarUrl}
               onUploadComplete={(url) => handleInputChange("avatarUrl", url)}
+              cropType="avatar"
             />
 
             <div className="space-y-2">
@@ -242,48 +273,29 @@ export default function LinktreeDialog({
             </div>
           </TabsContent>
 
-          {/* Aba Links */}
+          {/* Aba Links (com alterações) */}
           <TabsContent value="links" className="space-y-4 pt-4">
-            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-              {links.map((link) => (
-                <div
-                  key={link.id}
-                  className="flex items-center gap-2 p-3 border rounded-lg"
-                >
-                  <div className="flex-grow space-y-2">
-                    <Input
-                      placeholder="Título do link"
-                      value={link.title}
-                      onChange={(e) =>
-                        handleLinkChange(link.id, "title", e.target.value)
-                      }
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={links}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                  {links.map((link) => (
+                    <SortableLinkItem
+                      key={link.id}
+                      link={link}
+                      handleLinkChange={handleLinkChange}
+                      removeLink={removeLink}
                     />
-                    <Input
-                      placeholder="Descrição do link"
-                      value={link.description}
-                      onChange={(e) =>
-                        handleLinkChange(link.id, "description", e.target.value)
-                      }
-                    />
-                    <Input
-                      placeholder="URL (https://...)"
-                      value={link.url}
-                      onChange={(e) =>
-                        handleLinkChange(link.id, "url", e.target.value)
-                      }
-                    />
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeLink(link.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
             <Button
               variant="outline"
               onClick={addLink}
@@ -294,8 +306,7 @@ export default function LinktreeDialog({
             </Button>
           </TabsContent>
 
-
-          {/* Aba Aparência */}
+          {/* Aba Aparência (sem alterações) */}
           <TabsContent value="appearance" className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label>Tema</Label>
@@ -304,11 +315,14 @@ export default function LinktreeDialog({
                 onChange={(themeId) => handleInputChange("theme", themeId)}
               />
             </div>
-            
+
             <ImageUploader
               label="Imagem de Fundo (Opcional)"
               initialUrl={formData.backgroundImageUrl}
-              onUploadComplete={(url) => handleInputChange("backgroundImageUrl", url)}
+              onUploadComplete={(url) =>
+                handleInputChange("backgroundImageUrl", url)
+              }
+              cropType="background"
             />
           </TabsContent>
         </Tabs>
