@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LinkUp App",
+  title: "Elosys",
   description: "Plataforma de estilização e criação de links",
 };
 

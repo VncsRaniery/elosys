@@ -37,14 +37,15 @@ export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
       className={`relative min-h-screen w-full transition-colors duration-500 ${backgroundClass}`}
       style={backgroundStyle}
     >
-      <Link
-        href="/"
-        className="bg-card rounded-full absolute top-6 left-6 w-12 h-12 flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors z-10"
-        aria-label="Voltar para a página inicial"
-      >
-        <Logo />
-      </Link>
-      <main className="min-h-screen w-full flex flex-col items-center justify-center px-4 pt-24 pb-8">
+      <div className="flex justify-start p-4">
+        <Link href="/" className="flex items-center gap-2 font-medium">
+          <div className="bg-card rounded-full w-12 h-12 flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors">
+            <Logo />
+          </div>
+          <span className="text-xl font-semibold">Elosys</span>
+        </Link>
+      </div>
+      <main className="min-h-screen w-full flex flex-col items-center justify-center px-4 pt-8 pb-8">
         {/* Card Principal do Linktree */}
         <Card className="w-full max-w-md p-8 bg-card/80 border-border shadow-lg backdrop-blur-sm">
           <div className="flex flex-col items-center text-center mb-8">
@@ -103,7 +104,7 @@ export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
               size="lg"
               className="w-full border-slate-600/50 text-slate-200 hover:bg-slate-800/50 font-semibold px-8 py-4 rounded-2xl transition-all duration-300 bg-slate-900/20 backdrop-blur-sm hover:border-slate-500"
             >
-              Venha fazer parte do LinkUp
+              Venha fazer parte do Elosys!
               <ZapIcon className="w-4 h-4 ml-2 text-blue-400" />
             </Button>
           </Link>

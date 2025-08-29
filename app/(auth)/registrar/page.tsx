@@ -10,7 +10,7 @@ export default function RegisterPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <Link href="/" className="flex items-center gap-2 font-medium">
             <Logo />
-            LinkUp.
+            Elosys.
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

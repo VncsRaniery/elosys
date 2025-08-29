@@ -36,7 +36,7 @@ export default function Home() {
               </div>
 
               <h1 className="text-5xl sm:text-7xl font-bold bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-transparent leading-tight">
-                LinkUp
+                Elosys
               </h1>
 
               <p className="text-xl sm:text-2xl text-slate-300 font-light max-w-2xl mx-auto leading-relaxed">
@@ -111,7 +111,7 @@ export default function Home() {
         </div>
         <footer className="w-full text-center py-6">
           <p className="text-slate-400 text-sm">
-            &copy; {new Date().getFullYear()} LinkUp | Feito por VncsRaniery
+            &copy; {new Date().getFullYear()} Elosys | Feito por VncsRaniery
           </p>
         </footer>
       </div>

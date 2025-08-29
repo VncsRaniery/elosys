@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const linktree = await response.json();
 
     return {
-      title: `@${linktree.username} - LinkUp`,
+      title: `@${linktree.username} - Elosys`,
       description: linktree.bio || `Links de @${linktree.username}`,
       openGraph: {
         title: `@${linktree.username}`,

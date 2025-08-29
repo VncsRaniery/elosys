@@ -162,7 +162,7 @@ export function LinktreeDashboard() {
           onClick={() => setIsDialogOpen(true)}
           className="flex-1 sm:flex-none"
         >
-          <PlusIcon className="h-4 w-4" /> Adicionar um novo Linktree
+          <PlusIcon className="h-4 w-4" /> Adicionar um novo LinkUp
         </Button>
       </div>
 
@@ -175,9 +175,9 @@ export function LinktreeDashboard() {
           <div className="mb-4 flex size-16 items-center justify-center rounded-full border border-dashed">
             <Plus className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold">Nenhum Linktree encontrado</h3>
+          <h3 className="text-lg font-semibold">Nenhum LinkUp encontrado</h3>
           <p className="text-muted-foreground mt-2 max-w-xs text-sm">
-            Comece criando seu primeiro Linktree para compartilhar seus links
+            Comece criando seu primeiro LinkUp para compartilhar seus links
           </p>
         </div>
       ) : (

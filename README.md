@@ -1,12 +1,12 @@
 <h1 align="start">
-  LinkUp - Criação e personalização de Linktrees
+  Elosys - Criação e personalização de Linktrees
 </h1>
 
-<img width="1280" alt="LinkUp Thumbnail" src="/public/assets/Banner.png">
+<img width="1280" alt="Elosys Thumbnail" src="/public/assets/Banner.png">
 
 ## Introdução
 
-**LinkUp** é uma aplicação web moderna inspirada no conceito de Linktree, permitindo que usuários criem e compartilhem uma página personalizada com seus principais links, redes sociais e informações. O projeto foi desenvolvido utilizando tecnologias de ponta para garantir performance, segurança e uma experiência de usuário agradável.
+**Elosys** é uma aplicação web moderna inspirada no conceito de Linktree, permitindo que usuários criem e compartilhem uma página personalizada com seus principais links, redes sociais e informações. O projeto foi desenvolvido utilizando tecnologias de ponta para garantir performance, segurança e uma experiência de usuário agradável.
 
 Destaques do projeto:
 

@@ -54,7 +54,7 @@ export default function WelcomePage() {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
             Bem-vindo ao{" "}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              LinkUp!
+              Elosys!
             </span>
             👋
           </h1>
