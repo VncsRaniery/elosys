@@ -1,3 +1,5 @@
+"use client";
+
 import InfoMenu from "@/components/navbar/info-menu";
 import Logo from "@/components/ui/logo";
 import NotificationMenu from "@/components/navbar/notification-menu";
@@ -14,6 +16,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { SettingsDialog } from "./settings-dialog";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const navigationLinks = [
   { href: "/", label: "Home" },
@@ -23,6 +29,8 @@ const navigationLinks = [
 ];
 
 export default function ComponentNavbar() {
+  const pathname = usePathname();
+
   return (
     <header className="border-b px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
@@ -66,35 +74,54 @@ export default function ComponentNavbar() {
             <PopoverContent align="start" className="w-36 p-1 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                  {navigationLinks.map((link, index) => (
-                    <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink href={link.href} className="py-1.5">
-                        {link.label}
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  ))}
+                  {navigationLinks.map((link) => {
+                    const isActive = pathname === link.href;
+
+                    return (
+                      <NavigationMenuItem key={link.href} className="w-full">
+                        <NavigationMenuLink
+                          href={link.href}
+                          className={cn(
+                            "block py-1.5 transition-colors",
+                            isActive
+                              ? "font-semibold text-primary"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {link.label}
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                    );
+                  })}
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
           </Popover>
           {/* Main nav */}
           <div className="flex items-center gap-6">
-            <a href="#" className="text-primary hover:text-primary/90">
+            <Link href="#" className="text-primary hover:text-primary/90">
               <Logo />
-            </a>
+            </Link>
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    <NavigationMenuLink
-                      href={link.href}
-                      className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                    >
-                      {link.label}
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+                {navigationLinks.map((link) => {
+                  const isActive = pathname === link.href;
+
+                  return (
+                    <NavigationMenuItem key={link.href}>
+                      <NavigationMenuLink
+                        href={link.href}
+                        className={cn(
+                          "py-1.5 font-medium transition-colors hover:text-primary",
+                          isActive ? "text-primary" : "text-muted-foreground"
+                        )}
+                      >
+                        {link.label}
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  );
+                })}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -106,6 +133,8 @@ export default function ComponentNavbar() {
             <InfoMenu />
             {/* Notification */}
             <NotificationMenu />
+            {/* Settings */}
+            <SettingsDialog />
           </div>
           {/* User menu */}
           <UserMenu />

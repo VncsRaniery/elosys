@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -77,10 +75,10 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* ===== MINHAS VARIÁVEIS DE GRADIENTES PARA TEMAS DO LINKTREE ===== */
+  /* ===== MINHAS VARIÁVEIS DE GRADIENTES PARA TEMAS DO LINKTREE =====
   /* Temas do Shadcn */
   --tema-claro: oklch(1 0 0);
-  --background: oklch(0.145 0 0);
+  --tema-escuro: oklch(0.145 0 0);
 
   /* Gradientes Azuis */
   --gradiente-ceu-sereno: linear-gradient(to right, #89f7fe, #66a6ff);

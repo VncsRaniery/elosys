@@ -38,8 +38,8 @@ Certifique-se de ter instalado
 1. Clonar este repositório:
 
    ```bash
-   git clone https://github.com/VncsRaniery/my-linktree
-   cd my-linktree
+   git clone https://github.com/VncsRaniery/elosys
+   cd elosys
    ```
 
 2. Instale as dependências:

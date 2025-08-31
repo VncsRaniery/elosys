@@ -93,5 +93,17 @@ model Link {
 
     linktree Linktree @relation(fields: [linktreeId], references: [id], onDelete: Cascade)
 
+    clicks Click[]
+
     @@map("links")
+}
+
+model Click {
+    id        String   @id @default(cuid())
+    linkId    String   @map("link_id")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+    @@map("clicks")
 }

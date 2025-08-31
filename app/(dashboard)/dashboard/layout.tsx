@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "@/styles/globals.css";
 import ComponentNavbar from "@/components/navbar/navbar-component";
 
 export const metadata: Metadata = {

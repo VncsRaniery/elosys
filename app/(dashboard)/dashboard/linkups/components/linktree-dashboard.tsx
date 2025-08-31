@@ -151,10 +151,10 @@ export function LinktreeDashboard() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold">
             Meus LinkUps
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 mt-2">
             Gerencie todos os seus LinkUps em um só lugar
           </p>
         </div>
@@ -204,7 +204,7 @@ export function LinktreeDashboard() {
                         @{linktree.username}
                       </h3>
                       {linktree.displayName && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm">
                           {linktree.displayName}
                         </p>
                       )}
@@ -218,12 +218,12 @@ export function LinktreeDashboard() {
 
               <CardContent>
                 {linktree.bio && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-sm mb-4">
                     {linktree.bio}
                   </p>
                 )}
 
-                <div className="text-sm text-gray-500 mb-4">
+                <div className="text-sm mb-4">
                   <span className="mx-2">•</span>
                   <span>Tema: {linktree.theme}</span>
                 </div>
@@ -291,8 +291,8 @@ export function LinktreeDashboard() {
                   </AlertDialog>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-xs text-gray-500">
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-xs">
                     Criado em{" "}
                     {new Date(linktree.createdAt).toLocaleDateString("pt-BR")}
                   </p>

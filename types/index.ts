@@ -60,3 +60,17 @@ export interface CreateLinktreePayload {
     url: string;
   }>;
 }
+
+// ======= INTERFACE PARA AS ANÁLISES ======= //
+export interface AnalyticsData {
+  totalLinkUps: number;
+  totalLinks: number;
+  activeLinks: number;
+  totalClicks: number;
+  todayClicks: number;
+  mostClickedLink: {
+    title: string;
+    url: string;
+    clicks: number;
+  } | null;
+}

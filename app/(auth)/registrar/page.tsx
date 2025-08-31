@@ -1,4 +1,4 @@
-import { RegisterForm } from "../components/register-form";
+import { RegisterForm } from "@/app/(auth)/components/register-form";
 import Logo from "@/components/ui/logo";
 import Image from "next/image";
 import Link from "next/link";

@@ -32,12 +32,10 @@ export function SortableLinkItem({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 10 : "auto", // Garante que o item arrastado fique por cima
+    zIndex: isDragging ? 10 : "auto",
   };
 
-  // ✅ MELHORIA: Função para tratar a mudança na URL
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Remove "https://" do valor para armazenar apenas o conteúdo
     const cleanUrl = e.target.value.replace("https://", "");
     handleLinkChange(link.id, "url", cleanUrl);
   };

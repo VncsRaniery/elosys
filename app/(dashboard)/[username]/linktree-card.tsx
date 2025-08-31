@@ -10,9 +10,17 @@ import { GetSocialIcon } from "@/utils/icons";
 import { getThemeById } from "@/utils/themes";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
+import { useEffect } from "react";
 
 interface PublicLinktreeViewProps {
-  linktree: Linktree;
+  linktree: Linktree & {
+    links: {
+      id: string;
+      title: string;
+      description: string | null;
+      url: string;
+    }[];
+  };
 }
 
 export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
@@ -28,7 +36,24 @@ export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
       }
     : {};
 
-  const handleLinkClick = (url: string) => {
+  useEffect(() => {
+    fetch("/api/track-view", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ linktreeId: linktree.id }),
+      keepalive: true,
+    });
+  }, [linktree.id]);
+
+  const handleLinkClick = (linkId: string, url: string) => {
+    fetch("/api/track-click", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ linkId }),
+      keepalive: true,
+    });
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -69,12 +94,12 @@ export function LinktreeCard({ linktree }: PublicLinktreeViewProps) {
           </div>
 
           <div className="space-y-3">
-            {linktree.links.map((link, index) => (
+            {linktree.links.map((link) => (
               <Button
-                key={index}
+                key={link.id}
                 variant="outline"
                 className="w-full h-auto p-4 justify-start text-left bg-card hover:bg-accent hover:text-accent-foreground border-border hover:border-accent/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-md group"
-                onClick={() => handleLinkClick(link.url)}
+                onClick={() => handleLinkClick(link.id, link.url)}
               >
                 <div className="flex items-center w-full">
                   <GetSocialIcon

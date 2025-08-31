@@ -5,6 +5,7 @@ import Logo from "@/components/ui/logo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 export default function NotFoundPage() {
   const router = useRouter();
   const [canGoBack, setCanGoBack] = useState(false);
